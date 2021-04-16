@@ -31,8 +31,10 @@ def multivar_taylor(func, x, x0):
       locsub = x0[i] + t*hvar[i]
       loc_func = loc_func.subs(locvar, locsub)
 
+    # First order
     g = 0
-    g += loc_func.diff(t,i).subs(t,0)*t
+    for i in range(2):
+      g += loc_func.diff(t,i).subs(t,0)*t**i
 
     for i in range(nvar):
       g = g.subs(hlist[i], x[i] - x0[i])
@@ -154,6 +156,7 @@ def linearize(term):
   x = [delta_rho, delta_ug, delta_u1, delta_u2, delta_u3, delta_B1, delta_B2, delta_B3, delta_ur, delta_F1, delta_F2, delta_F3]
   x0 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   return multivar_taylor(term, x, x0)
+  #return mtaylor(term, x, x0)
 
 def get_coeff(term, var):
   coeffs = Poly(term, var).all_coeffs()
@@ -225,9 +228,6 @@ delta_vars_dt = [delta_rho_dt, delta_ug_dt, delta_u1_dt, delta_u2_dt, delta_B2_d
                  delta_F1_dt, delta_F2_dt]
 var_names = ['drho', 'dug', 'du1', 'du2', 'dB2', 'dur', 'dF1', 'dF2']
 
-#ans = linsolve(simplify(system), delta_vars_dt) # simplify() call fails
-print(system)
-print(delta_vars_dt)
 ans = linsolve(system, delta_vars_dt)
 solns_delta_vars_dt = ans.args[0]
 def fmat(i,j):
